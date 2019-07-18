@@ -1,11 +1,16 @@
 #!/bin/sh
 #
 
-{{ range $host, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
-  {{ range $index, $container := $containers }}
-	{{ if (not (exists (printf "/etc/letsencrypt/live/%s" $container.Env.VIRTUAL_HOST))) }}
-certbot certonly --agree-tos -m ${CERTBOT_ACCOUNT} --staging --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d {{ $container.Env.VIRTUAL_HOST }}
-	{{ end }}
+certbot renew
 
+{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+
+{{ range $index, $host := keys $hosts }}
+  {{ if (not (exists (printf "/etc/letsencrypt/links/%s" $host))) }}
+certbot certonly -n --agree-tos -m ${CERTBOT_ACCOUNT} \
+  --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini \
+  --deploy-hook /certbot/deploy-hook.sh \
+  --staging \
+  -d {{ $host }}
   {{ end }}
 {{ end }}

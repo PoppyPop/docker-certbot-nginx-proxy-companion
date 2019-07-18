@@ -10,6 +10,8 @@ RUN mkdir /certbot/
 
 ADD notify.sh /certbot/notify.sh
 ADD certbot.sh.tmpl /certbot/certbot.sh.tmpl
+ADD certbot-san.sh.tmpl /certbot/certbot-san.sh.tmpl
+ADD deploy-hook.sh /certbot/deploy-hook.sh
 
 VOLUME /etc/letsencrypt
 

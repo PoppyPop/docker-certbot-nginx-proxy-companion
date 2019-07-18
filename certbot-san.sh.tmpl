@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+
+certbot renew
+
+{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+
+DOMAINS="{{ "" -}}
+
+{{ range $index, $host := keys $hosts -}}
+  {{ if (not (exists (printf "/etc/letsencrypt/links/%s" $host))) -}}
+    -d {{ $host }}{{ " " -}}
+  {{ end -}}
+{{ end }}"
+
+if [ ${#DOMAINS} -gt 3 ]; then
+  certbot certonly -n --agree-tos -m ${CERTBOT_ACCOUNT} \
+    --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini \
+    --deploy-hook /certbot/deploy-hook.sh \
+    --staging \
+    $DOMAINS
+fi
