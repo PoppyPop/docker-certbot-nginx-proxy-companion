@@ -10,7 +10,6 @@ certbot renew
 certbot certonly -n --agree-tos -m ${CERTBOT_ACCOUNT} \
   --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini \
   --deploy-hook /certbot/deploy-hook.sh \
-  --staging \
   -d {{ $host }}
   {{ end }}
 {{ end }}
